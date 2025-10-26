@@ -11,4 +11,5 @@ class Jurusan extends Model
     {
         return $this->hasMany(Kelas::class, 'jurusan_id');
     }
+    protected $table = 'jurusan';
 }

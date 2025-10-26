@@ -12,22 +12,17 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($users as $u)
-                <tr>
-                    <td>{{ $u->id }}</td>
-                    <td>{{ $u->email }}</td>
-                    <td>{{ implode(', ', $u->roles->pluck('name')->toArray()) }}</td>
-                    <td>
-                        <a href="{{ route('admin.users.edit', $u) }}" class="btn btn-sm btn-warning">Edit</a>
-                        <form action="{{ route('admin.users.destroy', $u) }}" method="POST" class="d-inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-sm btn-danger"
-                                onclick="return confirm('Yakin mau hapus user ini?')">Hapus</button>
-                        </form>
-                    </td>
-                </tr>
-                @endforeach
+               @foreach($users as $u)
+<tr>
+  <td>{{ $u->id }}</td>
+  <td>{{ $u->email }}</td>
+  <td>{{ implode(', ', $u->roles->pluck('name')->toArray()) }}</td>
+  <td>
+      <a href="{{ route('admin.users.edit', $u->id) }}" class="btn btn-sm btn-warning">Edit</a>
+  </td>
+</tr>
+@endforeach
+
             </tbody>
         </table>
     </div>
