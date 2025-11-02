@@ -11,7 +11,7 @@ use App\Http\Controllers\{
     DokumenPendaftaranController,
     OrangTuaController,
     WaliController,
-    PembayaranController,
+    PembayaranController, // nah iki , isi controller mu salah
     UserController,
 };
 
@@ -42,7 +42,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('dokumen', DokumenPendaftaranController::class);
     Route::resource('orangtua', OrangTuaController::class);
     Route::resource('wali', WaliController::class);
-    Route::resource('pembayaran', PembayaranController::class)->except(['edit','update']);
+    Route::resource('pembayaran', PembayaranController::class)->except(['edit', 'update']);
 });
 
 Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
