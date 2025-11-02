@@ -21,8 +21,10 @@ use App\Http\Controllers\{
 |--------------------------------------------------------------------------
 */
 
-// ✅ Redirect root ke login
-Route::get('/', fn() => redirect('/login'));
+Route::get('/', function () {
+    return view('landing');
+});
+
 
 // ✅ Dashboard umum untuk semua user yang login
 Route::get('/dashboard', function () {
