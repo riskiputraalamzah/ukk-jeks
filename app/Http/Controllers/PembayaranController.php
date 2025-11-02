@@ -1,74 +1,86 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') - PPDB Admin</title>
+<?php
 
-    {{-- Bootstrap --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+namespace App\Http\Controllers;
 
-    <style>
-        body {
-            background-color: #f5f6fa;
+use App\Models\Pembayaran;
+use App\Models\FormulirPendaftaran;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
+class PembayaranController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    public function index()
+    {
+        if (Auth::user()->hasRole('admin')) {
+            $pembayarans = Pembayaran::paginate(20);
+        } else {
+            // user hanya melihat pembayaran miliknya melalui formulari
+            $pembayarans = Pembayaran::whereHas('formulir', function ($q) {
+                $q->where('user_id', Auth::id());
+            })->paginate(20);
+        }
+        return view('pembayaran.index', compact('pembayarans'));
+    }
+
+    public function create()
+    {
+        $formulirs = FormulirPendaftaran::where('user_id', Auth::id())->get();
+        return view('pembayaran.create', compact('formulirs'));
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'formulir_id' => 'required|exists:formulir_pendaftaran,id',
+            'tanggal_bayar' => 'required|date',
+            'metode_bayar' => 'required|in:VA,E-Wallet,Transfer Bank',
+            'jumlah_awal' => 'required|numeric|min:0',
+            'promo_voucher_id' => 'nullable|exists:promo,id',
+            'bukti_bayar' => 'nullable|file|max:5120', // 5MB
+        ]);
+
+        if ($request->hasFile('bukti_bayar')) {
+            $data['bukti_bayar'] = $request->file('bukti_bayar')->store('bukti_bayar', 'public');
         }
 
-        .navbar {
-            background-color: #0d6efd !important;
-        }
+        $data['status'] = 'Menunggu';
+        $data['kode_transaksi'] = 'TRX-' . time() . '-' . rand(1000, 9999);
 
-        .navbar .nav-link {
-            color: #fff !important;
-            font-weight: 500;
-            transition: 0.3s;
-        }
+        $p = Pembayaran::create($data);
 
-        .navbar .nav-link:hover,
-        .navbar .nav-link.active {
-            color: #dbeafe !important;
-        }
+        return redirect()->route('pembayaran.index')->with('success', 'Pembayaran tersimpan, menunggu verifikasi.');
+    }
 
-        .content {
-            padding: 40px;
-        }
+    public function show(Pembayaran $pembayaran)
+    {
+        // cek hak akses
+        if (!Auth::user()->hasRole('admin') && $pembayaran->formulir->user_id != Auth::id()) abort(403);
+        return view('pembayaran.show', compact('pembayaran'));
+    }
 
-        .card-header {
-            background-color: #0d6efd;
-            color: white;
-            font-weight: 600;
-        }
-    </style>
-</head>
-<body>
+    public function verify(Request $request, Pembayaran $pembayaran)
+    {
+        // hanya admin boleh verifikasi
+        if (!Auth::user()->hasRole('admin')) abort(403);
 
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="{{ route('admin.dashboard') }}">
-            <i class="bi bi-grid-1x2-fill"></i> PPDB Admin
-        </a>
+        $data = $request->validate([
+            'status' => 'required|in:Menunggu,Lunas',
+            'catatan' => 'nullable|string'
+        ]);
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        $pembayaran->update([
+            'status' => $data['status'],
+            'admin_verifikasi_id' => Auth::id(),
+            'verified_at' => now(),
+            'catatan' => $data['catatan'] ?? null
+        ]);
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
-                <li class="nav-item"><a href="{{ route('admin.gelombang.index') }}" class="nav-link {{ request()->routeIs('admin.gelombang.*') ? 'active' : '' }}">Gelombang</a></li>
-                <li class="nav-item"><a href="{{ route('admin.promo.index') }}" class="nav-link {{ request()->routeIs('admin.promo.*') ? 'active' : '' }}">Promo</a></li>
-                <li class="nav-item"><a href="{{ route('admin.jurusan.index') }}" class="nav-link {{ request()->routeIs('admin.jurusan.*') ? 'active' : '' }}">Jurusan</a></li>
-                <li class="nav-item"><a href="{{ route('admin.kelas.index') }}" class="nav-link {{ request()->routeIs('admin.kelas.*') ? 'active' : '' }}">Kelas</a></li>
-                <li class="nav-item"><a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">Users</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<div class="content">
-    @yield('content')
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+        return redirect()->route('pembayaran.show', $pembayaran)->with('success', 'Pembayaran diupdate.');
+    }
+}

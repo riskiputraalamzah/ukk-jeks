@@ -1,11 +1,13 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Promo extends Model
 {
-    protected $fillable = ['jenis_promo','nominal_potongan','keterangan','is_aktif'];
+    protected $table = 'promo';
+    protected $fillable = ['jenis_promo', 'nominal_potongan', 'keterangan', 'is_aktif'];
 
     public function gelombangs()
     {
