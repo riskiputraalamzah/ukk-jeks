@@ -9,8 +9,7 @@ class PromoController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
-        $this->middleware('can:admin')->except(['index', 'show']);
+        $this->middleware(['auth', 'can:admin']);
     }
 
     public function index()
@@ -21,7 +20,7 @@ class PromoController extends Controller
 
     public function create()
     {
-        return view('promo.create');
+        return view('admin.promo.create');
     }
 
     public function store(Request $request)
@@ -32,18 +31,20 @@ class PromoController extends Controller
             'keterangan' => 'nullable|string',
             'is_aktif' => 'boolean',
         ]);
-        Promo::create($data);
-        return redirect()->route('promo.index')->with('success', 'Promo dibuat');
-    }
 
-    public function show(Promo $promo)
-    {
-        return view('promo.show', compact('promo'));
+        Promo::create([
+            'jenis_promo' => $data['jenis_promo'],
+            'nominal_potongan' => $data['nominal_potongan'],
+            'keterangan' => $data['keterangan'] ?? null,
+            'is_aktif' => $request->has('is_aktif') ? 1 : 0,
+        ]);
+
+        return redirect()->route('admin.promo.index')->with('success', 'Promo berhasil dibuat');
     }
 
     public function edit(Promo $promo)
     {
-        return view('promo.edit', compact('promo'));
+        return view('admin.promo.edit', compact('promo'));
     }
 
     public function update(Request $request, Promo $promo)
@@ -54,13 +55,20 @@ class PromoController extends Controller
             'keterangan' => 'nullable|string',
             'is_aktif' => 'boolean',
         ]);
-        $promo->update($data);
-        return redirect()->route('promo.index')->with('success', 'Promo diupdate');
+
+        $promo->update([
+            'jenis_promo' => $data['jenis_promo'],
+            'nominal_potongan' => $data['nominal_potongan'],
+            'keterangan' => $data['keterangan'] ?? null,
+            'is_aktif' => $request->is_aktif,
+        ]);
+
+        return redirect()->route('admin.promo.index')->with('success', 'Promo berhasil diperbarui');
     }
 
     public function destroy(Promo $promo)
     {
         $promo->delete();
-        return redirect()->route('promo.index')->with('success', 'Promo dihapus');
+        return redirect()->route('admin.promo.index')->with('success', 'Promo berhasil dihapus');
     }
 }
