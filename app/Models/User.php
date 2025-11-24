@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -8,11 +9,27 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    protected $fillable = ['username','email','password','no_hp'];
+    // Kolom yang boleh diisi saat Register / Update
+    protected $fillable = [
+        'username',
+        'email',
+        'no_hp',
+        'password',
+        'avatar',
+    ];
 
-    protected $hidden = ['password'];
+    // Password harus di-hash otomatis
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
-    // relasi many-to-many role
+    // Casting password agar auto bcrypt (Laravel 10+)
+    protected $casts = [
+        'password' => 'hashed',
+    ];
+
+    // Relasi ke role (many-to-many)
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
@@ -20,7 +37,7 @@ class User extends Authenticatable
 
     public function hasRole($roleName)
     {
-       return $this->roles()->where('name', $roleName)->exists();
+        return $this->roles()->where('name', $roleName)->exists();
     }
 
     public function formulir()

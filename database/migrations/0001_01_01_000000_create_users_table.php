@@ -20,6 +20,8 @@ return new class extends Migration
             // legacy: tidak menambahkan kolom 'role' ENUM karena kita pakai roles & pivot
             $table->timestamp('created_at')->nullable();
             $table->timestamp('updated_at')->nullable();
+            $table->rememberToken();
+
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

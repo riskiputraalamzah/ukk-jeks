@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LandingPageController;
 
 use App\Http\Controllers\{
     GelombangPendaftaranController,
@@ -24,9 +25,8 @@ use App\Http\Controllers\{
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {
-    return view('pages.landing');
-});
+Route::get('/', [LandingPageController::class, 'index'])->name('landing');
+
 
 // Dashboard user biasa
 Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -58,6 +58,12 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->name('admin.')->group
     Route::resource('kelas', KelasController::class);
     Route::resource('users', UserController::class);
 });
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
+
 
 // Auth routes
 require __DIR__ . '/auth.php';

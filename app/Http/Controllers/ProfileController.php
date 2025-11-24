@@ -6,58 +6,70 @@ use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Hash;
+
 use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
     public function edit(Request $request): View
     {
-         if (\Illuminate\Support\Facades\Gate::allows('admin')) {
-    } else {
-    }
-        return view('profile.edit', [
+        if (!Gate::allows('admin')) {
+            abort(403, 'Unauthorized');
+        }
+
+        return view('admin.profile.edit', [
             'user' => $request->user(),
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $request->user()->fill($request->validated());
+public function update(ProfileUpdateRequest $request): RedirectResponse
+{
+    if (!Gate::allows('admin')) {
+        abort(403, 'Unauthorized');
+    }
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+    $user = $request->user();
+
+    // Update username
+    // 
+    if ($request->username !== null) {
+    $user->username = $request->username;
+}
+
+
+    // Update email
+    // if ($request->filled('email')) {
+    //     $user->email = $request->email;
+    // }
+
+    // // Update nomor HP
+    // if ($request->filled('no_hp')) {
+    //     $user->no_hp = $request->no_hp;
+    // }
+
+    // Upload avatar
+    if ($request->hasFile('avatar')) {
+        $path = $request->file('avatar')->store('avatars', 'public');
+        $user->avatar = $path;
+    }
+
+    // Update password
+    if ($request->filled('password')) {
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Password lama salah!']);
         }
-
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        $user->password = bcrypt($request->password);
     }
 
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
+    $user->save();
 
-        $user = $request->user();
+    return Redirect::route('admin.dashboard')
+        ->with('success', 'Profil berhasil diperbarui!');
+}
 
-        Auth::logout();
 
-        $user->delete();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
-    }
 }
