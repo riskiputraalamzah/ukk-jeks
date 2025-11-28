@@ -10,22 +10,23 @@ class CreateOrangTuaTable extends Migration
     {
         Schema::create('orang_tua', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('formulir_id');
             // Ayah
-            $table->string('nama_ayah',100)->nullable();
+            $table->string('nama_ayah', 100)->nullable();
             $table->date('tanggal_lahir_ayah')->nullable();
-            $table->string('pekerjaan_ayah',100)->nullable();
-            $table->decimal('penghasilan_ayah',15,2)->nullable();
+            $table->string('pekerjaan_ayah', 100)->nullable();
+            $table->decimal('penghasilan_ayah', 15, 2)->nullable();
             $table->text('alamat_ayah')->nullable();
-            $table->string('no_hp_ayah',20)->nullable();
-            $table->string('nik_ayah',20)->unique()->nullable();
+            $table->string('no_hp_ayah', 20)->nullable();
+            $table->string('nik_ayah', 20)->unique()->nullable();
             // Ibu
-            $table->string('nama_ibu',100)->nullable();
+            $table->string('nama_ibu', 100)->nullable();
             $table->date('tanggal_lahir_ibu')->nullable();
-            $table->string('pekerjaan_ibu',100)->nullable();
-            $table->decimal('penghasilan_ibu',15,2)->nullable();
+            $table->string('pekerjaan_ibu', 100)->nullable();
+            $table->decimal('penghasilan_ibu', 15, 2)->nullable();
             $table->text('alamat_ibu')->nullable();
-            $table->string('no_hp_ibu',20)->nullable();
-            $table->string('nik_ibu',20)->unique()->nullable();
+            $table->string('no_hp_ibu', 20)->nullable();
+            $table->string('nik_ibu', 20)->unique()->nullable();
             $table->timestamps();
         });
     }

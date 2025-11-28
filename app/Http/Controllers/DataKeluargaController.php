@@ -20,7 +20,7 @@ class DataKeluargaController extends Controller
     public function index()
     {
         $formulir = auth()->user()->formulir()->first();
-        
+
         if (!$formulir) {
             return redirect()->route('formulir.index')
                 ->with('error', 'Anda harus mengisi formulir pendaftaran terlebih dahulu.');
@@ -31,7 +31,7 @@ class DataKeluargaController extends Controller
             $ayah = OrangTua::where('formulir_id', $formulir->id)
                 ->where('jenis_orangtua', 'ayah')
                 ->first();
-                
+
             $ibu = OrangTua::where('formulir_id', $formulir->id)
                 ->where('jenis_orangtua', 'ibu')
                 ->first();
@@ -39,10 +39,9 @@ class DataKeluargaController extends Controller
             $wali = Wali::where('formulir_id', $formulir->id)->first();
 
             return view('data-keluarga.index', compact('formulir', 'ayah', 'ibu', 'wali'));
-
         } catch (\Exception $e) {
             \Log::error('Error loading data keluarga: ' . $e->getMessage());
-            
+
             return view('data-keluarga.index', [
                 'formulir' => $formulir,
                 'ayah' => null,
@@ -54,6 +53,7 @@ class DataKeluargaController extends Controller
 
     public function storeCombined(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'formulir_id' => 'required|exists:formulir_pendaftaran,id',
             // Validasi data ayah
@@ -82,10 +82,10 @@ class DataKeluargaController extends Controller
         }
 
         DB::beginTransaction();
-        
+
         try {
             $formulir = FormulirPendaftaran::find($request->formulir_id);
-            
+
             if ($formulir->user_id !== auth()->id()) {
                 abort(403);
             }
@@ -94,7 +94,7 @@ class DataKeluargaController extends Controller
             OrangTua::updateOrCreate(
                 [
                     'formulir_id' => $request->formulir_id,
-                    'jenis_orangtua' => 'ayah'
+                    // 'jenis_orangtua' => 'ayah'
                 ],
                 [
                     'nama_ayah' => $request->ayah['nama'],
@@ -102,18 +102,8 @@ class DataKeluargaController extends Controller
                     'pekerjaan_ayah' => $request->ayah['pekerjaan'],
                     'penghasilan_ayah' => $request->ayah['penghasilan'],
                     'alamat_ayah' => $request->ayah['alamat'],
-                    'no_hp_syah' => $request->ayah['no_hp'],
-                    'nik_ayah' => $request->ayah['nik']
-                ]
-            );
-
-            // Simpan/Update data ibu
-            OrangTua::updateOrCreate(
-                [
-                    'formulir_id' => $request->formulir_id,
-                    'jenis_orangtua' => 'ibu'
-                ],
-                [
+                    'no_hp_ayah' => $request->ayah['no_hp'],
+                    'nik_ayah' => $request->ayah['nik'],
                     'nama_ibu' => $request->ibu['nama'],
                     'tanggal_lahir_ibu' => $request->ibu['tanggal_lahir'],
                     'pekerjaan_ibu' => $request->ibu['pekerjaan'],
@@ -124,11 +114,12 @@ class DataKeluargaController extends Controller
                 ]
             );
 
+
+
             DB::commit();
 
             return redirect()->route('data-keluarga.index')
                 ->with('success', 'Data orang tua berhasil disimpan!');
-
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error('Error storing combined orang tua: ' . $e->getMessage());
@@ -156,7 +147,7 @@ class DataKeluargaController extends Controller
 
         try {
             $formulir = FormulirPendaftaran::find($request->formulir_id);
-            
+
             if ($formulir->user_id !== auth()->id()) {
                 abort(403);
             }
@@ -169,7 +160,6 @@ class DataKeluargaController extends Controller
 
             return redirect()->route('data-keluarga.index')
                 ->with('success', 'Data wali berhasil disimpan!');
-
         } catch (\Exception $e) {
             \Log::error('Error storing wali: ' . $e->getMessage());
             return redirect()->back()

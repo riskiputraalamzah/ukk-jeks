@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -6,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class OrangTua extends Model
 {
     protected $table = 'orang_tua'; // Sesuaikan dengan nama tabel di database
-    
+
     protected $fillable = [
         'formulir_id',
-        'jenis_orangtua', // jenis_orangtua
+        // 'jenis_orangtua', // jenis_orangtua
         'nama_ayah',       // nama_ayah  
         'tanggal_lahir_ayah', // tanggal_lahir_ayah
         'pekerjaan_ayah', // pekerjaan_ayah
@@ -19,8 +20,11 @@ class OrangTua extends Model
         'nik_ayah',         // nik_ayah
         'nama_ibu',        // nama_ibu
         'tanggal_lahir_ibu', // tanggal_lahir_ibu
-        'pekerjaan_lbu',  // pekerjaan_ibu
-        'penghasilan_ibu' // penghasilan_ibu
+        'pekerjaan_ibu',  // pekerjaan_ibu
+        'penghasilan_ibu', // penghasilan_ibu
+        'alamat_ibu',
+        'no_hp_ibu',
+        'nik_ibu',
     ];
 
     protected $casts = [
@@ -31,8 +35,8 @@ class OrangTua extends Model
     ];
 
     public function formulir()
-    { 
-        return $this->belongsTo(FormulirPendaftaran::class, 'formulir_id'); 
+    {
+        return $this->belongsTo(FormulirPendaftaran::class, 'formulir_id');
     }
 
     // Helper methods untuk memudahkan access data
