@@ -23,8 +23,11 @@ class StatusPendaftaranController extends Controller
         $formulir = $user->formulir()->first();
         
         if (!$formulir) {
-            return redirect()->route('formulir.index')
-                ->with('error', 'Anda harus mengisi formulir pendaftaran terlebih dahulu.');
+            return view('status.blocked', [
+                'message' => 'Anda harus mengisi formulir pendaftaran terlebih dahulu sebelum melihat status pendaftaran.',
+                'route' => route('formulir.index'),
+                'buttonText' => 'Isi Formulir Pendaftaran'
+            ]);
         }
 
         $pembayaran = Pembayaran::where('formulir_id', $formulir->id)->first();

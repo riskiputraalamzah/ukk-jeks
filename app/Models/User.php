@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Authenticatable
 {
@@ -40,8 +41,22 @@ class User extends Authenticatable
         return $this->roles()->where('name', $roleName)->exists();
     }
 
+    // UBAH INI: dari hasMany jadi hasOne (1 user punya 1 formulir)
     public function formulir()
     {
-        return $this->hasMany(FormulirPendaftaran::class, 'user_id');
+        return $this->hasOne(FormulirPendaftaran::class, 'user_id');
+    }
+
+    // RELASI BARU: langsung ke pembayaran
+    public function pembayaran()
+    {
+        return $this->hasOneThrough(
+            Pembayaran::class,
+            FormulirPendaftaran::class,
+            'user_id', // Foreign key pada formulir_pendaftaran
+            'formulir_id', // Foreign key pada pembayaran
+            'id', // Local key pada users
+            'id' // Local key pada formulir_pendaftaran
+        );
     }
 }

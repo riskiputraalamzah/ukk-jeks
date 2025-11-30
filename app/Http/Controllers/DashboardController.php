@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use App\Models\FormulirPendaftaran;
 
 class DashboardController extends Controller
 {
@@ -14,6 +15,9 @@ class DashboardController extends Controller
         }
 
         // Jika user biasa
-        return view('dashboard');
+         $user = Auth::user();
+        $formulir = FormulirPendaftaran::where('user_id', $user->id)->first();
+        
+        return view('dashboard', compact('formulir'));
     }
 }

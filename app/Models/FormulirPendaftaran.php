@@ -30,11 +30,16 @@ class FormulirPendaftaran extends Model
         'kota',
         'no_hp',
         'jurusan_id',
-        'gelombang_id'
+        'gelombang_id',
+        'status_verifikasi',
+        'catatan_verifikasi',
+        'admin_verifikasi_id',
+        'verified_at'
     ];
 
     protected $casts = [
         'tanggal_lahir' => 'date',
+        'verified_at' => 'datetime',
     ];
 
     public function user()
@@ -52,7 +57,6 @@ class FormulirPendaftaran extends Model
         return $this->belongsTo(GelombangPendaftaran::class, 'gelombang_id');
     }
 
-    // PERBAIKI RELASI DOKUMEN
     public function dokumen()
     {
         return $this->hasMany(DokumenPendaftaran::class, 'formulir_id');
@@ -66,5 +70,41 @@ class FormulirPendaftaran extends Model
     public function wali()
     {
         return $this->hasOne(Wali::class, 'formulir_id');
+    }
+
+    public function pembayaran()
+    {
+        return $this->hasOne(Pembayaran::class, 'formulir_id');
+    }
+
+    public function adminVerifikasi()
+    {
+        return $this->belongsTo(User::class, 'admin_verifikasi_id');
+    }
+
+    // Helper methods untuk verifikasi
+    public function isTerverifikasi()
+    {
+        return $this->status_verifikasi === 'diverifikasi';
+    }
+
+    public function isMenungguVerifikasi()
+    {
+        return $this->status_verifikasi === 'menunggu';
+    }
+
+    public function isDitolak()
+    {
+        return $this->status_verifikasi === 'ditolak';
+    }
+
+    public function isSudahBayar()
+    {
+        return $this->pembayaran && $this->pembayaran->isPaid();
+    }
+
+    public function isSiapDiverifikasi()
+    {
+        return $this->isSudahBayar() && $this->isMenungguVerifikasi();
     }
 }

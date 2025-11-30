@@ -37,6 +37,8 @@
                 z-index: 1000;
                 transition: all 0.3s ease;
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                display: flex;
+                flex-direction: column;
             }
 
             .sidebar-header {
@@ -44,6 +46,7 @@
                 border-bottom: 1px solid #eef2ff;
                 background: linear-gradient(135deg, #4f46e5, #7c3aed);
                 color: white;
+                flex-shrink: 0;
             }
 
             .sidebar-header h2 {
@@ -59,6 +62,8 @@
 
             .nav-links {
                 padding: 20px 0;
+                flex: 1;
+                overflow-y: auto;
             }
 
             .nav-item {
@@ -96,11 +101,10 @@
             }
 
             .sidebar-footer {
-                position: absolute;
-                bottom: 0;
-                width: 100%;
                 padding: 20px 25px;
                 border-top: 1px solid #eef2ff;
+                background: white;
+                flex-shrink: 0;
             }
 
             .user-info {
@@ -122,15 +126,26 @@
                 margin-right: 12px;
             }
 
+            .user-details {
+                flex: 1;
+                min-width: 0; /* Penting untuk text-overflow */
+            }
+
             .user-details h4 {
                 font-size: 0.9rem;
                 color: #374151;
                 margin-bottom: 2px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             .user-details p {
                 font-size: 0.8rem;
                 color: #6b7280;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             /* Tombol Logout Styles */
@@ -223,6 +238,14 @@
                 <i class="fas fa-bars"></i>
             </button>
 
+            @php
+    $user = auth()->user();
+    $formulir = $user->formulir;
+    $dokumenCount = $formulir ? \App\Models\DokumenPendaftaran::where('formulir_id', $formulir->id)->count() : 0;
+    $hasOrangTua = $formulir && $formulir->orangTua;
+    $hasPembayaran = $formulir && $formulir->pembayaran;
+@endphp
+
             <!-- Sidebar Navigation -->
             <div class="custom-sidebar" id="sidebar">
                 <div class="sidebar-header">
@@ -236,30 +259,49 @@
                         <span class="nav-text">Dashboard</span>
                     </a>
                     <a href="{{ route('formulir.index') }}" class="nav-item {{ request()->routeIs('formulir.*') ? 'active' : '' }}">
-                        <i class="fas fa-file-alt nav-icon"></i>
-                        <span class="nav-text">Formulir Pendaftaran</span>
-                    </a>
-                    <a href="{{ route('dokumen.index') }}" class="nav-item {{ request()->routeIs('dokumen.*') ? 'active' : '' }}">
+    <i class="fas fa-file-alt nav-icon"></i>
+    <span class="nav-text">Formulir Pendaftaran</span>
+    <span class="ml-auto {{ $formulir ? 'text-green-500' : 'text-gray-400' }}">
+        <i class="fas {{ $formulir ? 'fa-check-circle' : '' }}"></i>
+    </span>
+</a>
+
+<a href="{{ route('dokumen.index') }}" class="nav-item {{ request()->routeIs('dokumen.*') ? 'active' : '' }}">
     <i class="fas fa-file-upload nav-icon"></i>
     <span class="nav-text">Upload Dokumen</span>
+    <span class="ml-auto {{ $dokumenCount > 0 ? 'text-green-500' : 'text-gray-400' }}">
+        <i class="fas {{ $dokumenCount > 0 ? 'fa-check-circle' : '' }}"></i>
+    </span>
 </a>
 
 <a href="{{ route('data-keluarga.index') }}" class="nav-item {{ request()->routeIs('data-keluarga.*') ? 'active' : '' }}">
     <i class="fas fa-users nav-icon"></i>
     <span class="nav-text">Data Orang Tua & Wali</span>
+    <span class="ml-auto {{ $hasOrangTua ? 'text-green-500' : 'text-gray-400' }}">
+        <i class="fas {{ $hasOrangTua ? 'fa-check-circle' : '' }}"></i>
+    </span>
 </a>
-                    <a href="{{ route('status') }}" class="nav-item {{ request()->routeIs('status') ? 'active' : '' }}">
+
+ <a href="{{ route('status') }}" class="nav-item {{ request()->routeIs('status') ? 'active' : '' }}">
                         <i class="fas fa-history nav-icon"></i>
                         <span class="nav-text">Status Pendaftaran</span>
                     </a>
-                    <a href="{{ route('data-siswa') }}" class="nav-item {{ request()->routeIs('data-siswa') ? 'active' : '' }}">
-                        <i class="fas fa-user-graduate nav-icon"></i>
-                        <span class="nav-text">Data Siswa</span>
-                    </a>
-                    <a href="{{ route('pengaturan') }}" class="nav-item {{ request()->routeIs('pengaturan') ? 'active' : '' }}">
-                        <i class="fas fa-cog nav-icon"></i>
-                        <span class="nav-text">Pengaturan</span>
-                    </a>
+
+<a href="{{ route('data-siswa.index') }}" class="nav-item {{ request()->routeIs('data-siswa.*') ? 'active' : '' }}">
+    <i class="fas fa-user-graduate nav-icon"></i>
+    <span class="nav-text">Data Siswa</span>
+    <span class="ml-auto {{ $formulir && $hasOrangTua && $dokumenCount > 0 ? 'text-green-500' : 'text-gray-400' }}">
+        <i class="fas {{ $formulir && $hasOrangTua && $dokumenCount > 0 ? 'fa-check-circle' : '' }}"></i>
+    </span>
+</a>
+
+<a href="{{ route('pembayaran.index') }}" class="nav-item {{ request()->routeIs('pembayaran.*') ? 'active' : '' }}">
+    <i class="fa fa-credit-card-alt nav-icon"></i>
+    <span class="nav-text">Pembayaran</span>
+    <span class="ml-auto {{ $hasPembayaran ? 'text-green-500' : 'text-gray-400' }}">
+        <i class="fas {{ $hasPembayaran ? 'fa-check-circle' : '' }}"></i>
+    </span>
+</a>
                 </div>
                 
                 <div class="sidebar-footer">
