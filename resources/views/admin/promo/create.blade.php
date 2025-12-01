@@ -9,12 +9,21 @@
     </div>
 
     <div class="card-body">
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
         <form action="{{ route('admin.promo.store') }}" method="POST">
             @csrf
 
             <div class="mb-3">
-                <label class="form-label">Keterangan</label>
-                <input type="text" name="Keterangan" class="form-control" required>
+                <label class="form-label">Kode Promo</label>
+                <input type="text" name="kode_promo" class="form-control" required>
             </div>
 
             <div class="mb-3">
@@ -23,8 +32,8 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">kode promo</label>
-                <textarea name="kode_promo" class="form-control"></textarea>
+                <label class="form-label">Keterangan</label>
+                <textarea name="keterangan" class="form-control"></textarea>
             </div>
 
             <div class="mb-3">

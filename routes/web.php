@@ -71,6 +71,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pembayaran/{pembayaran}/continue', [PembayaranController::class, 'continue'])->name('pembayaran.continue');
     Route::get('/pembayaran/callback', [PembayaranController::class, 'callback'])->name('pembayaran.callback');
     Route::get('/pembayaran/{pembayaran}/check-status', [PembayaranController::class, 'checkStatus'])->name('pembayaran.check-status');
+    Route::post('/pembayaran/check-promo', [PembayaranController::class, 'checkPromo'])->name('pembayaran.check-promo');
     Route::post('/pembayaran/notification', [PembayaranController::class, 'notification'])->name('pembayaran.notification');
     Route::resource('pembayaran', PembayaranController::class)->except(['edit', 'update']);
 

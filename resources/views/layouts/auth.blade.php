@@ -28,8 +28,10 @@
             backdrop-filter: blur(20px);
             border-radius: 18px;
             border: 1px solid rgba(255, 255, 255, 0.25);
+
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
+
 
         .auth-input {
             background: rgba(255, 255, 255, 0.6);

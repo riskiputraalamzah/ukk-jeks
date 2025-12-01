@@ -31,6 +31,7 @@ class FormulirPendaftaran extends Model
         'no_hp',
         'jurusan_id',
         'gelombang_id',
+        'kelas_id',
         'status_verifikasi',
         'catatan_verifikasi',
         'admin_verifikasi_id',
@@ -55,6 +56,11 @@ class FormulirPendaftaran extends Model
     public function gelombang()
     {
         return $this->belongsTo(GelombangPendaftaran::class, 'gelombang_id');
+    }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'kelas_id');
     }
 
     public function dokumen()

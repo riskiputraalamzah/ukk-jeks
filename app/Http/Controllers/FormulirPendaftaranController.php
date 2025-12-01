@@ -15,11 +15,13 @@ class FormulirPendaftaranController extends Controller
      */
     public function index()
     {
+
         $formulir = FormulirPendaftaran::where('user_id', auth()->id())->first();
+
         $gelombangs = GelombangPendaftaran::all();
         $jurusan = Jurusan::all();
 
-        return view('formulir.index', compact('formulir', 'gelombangs','jurusan'));
+        return view('formulir.index', compact('formulir', 'gelombangs', 'jurusan'));
     }
 
     /**
@@ -73,7 +75,6 @@ class FormulirPendaftaranController extends Controller
 
             return redirect()->route('formulir.index')
                 ->with('success', $message);
-
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())

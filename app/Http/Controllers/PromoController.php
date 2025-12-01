@@ -20,23 +20,24 @@ class PromoController extends Controller
 
     public function create()
     {
+        // dd('ok');
         return view('admin.promo.create');
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'jenis_promo' => 'required|string|max:100',
+            'kode_promo' => 'required|string|max:100|unique:promo',
             'nominal_potongan' => 'required|numeric|min:0',
             'keterangan' => 'nullable|string',
             'is_aktif' => 'boolean',
         ]);
 
         Promo::create([
-            'jenis_promo' => $data['jenis_promo'],
+            'kode_promo' => $data['kode_promo'],
             'nominal_potongan' => $data['nominal_potongan'],
             'keterangan' => $data['keterangan'] ?? null,
-            'is_aktif' => $request->has('is_aktif') ? 1 : 0,
+            'is_aktif' => $request->is_aktif,
         ]);
 
         return redirect()->route('admin.promo.index')->with('success', 'Promo berhasil dibuat');
@@ -50,14 +51,22 @@ class PromoController extends Controller
     public function update(Request $request, Promo $promo)
     {
         $data = $request->validate([
-            'jenis_promo' => 'required|string|max:100',
+            'kode_promo' => 'required|string|max:100',
             'nominal_potongan' => 'required|numeric|min:0',
             'keterangan' => 'nullable|string',
             'is_aktif' => 'boolean',
         ]);
 
+        // Cek apakah promo sudah digunakan
+        if ($promo->pembayarans()->exists()) {
+            // Jika sudah digunakan, tidak boleh ubah kode_promo dan nominal_potongan
+            if ($data['kode_promo'] !== $promo->kode_promo || $data['nominal_potongan'] != $promo->nominal_potongan) {
+                return redirect()->back()->with('error', 'Promo sudah digunakan dalam transaksi. Tidak dapat mengubah Kode Promo atau Nominal Potongan.');
+            }
+        }
+
         $promo->update([
-            'jenis_promo' => $data['jenis_promo'],
+            'kode_promo' => $data['kode_promo'],
             'nominal_potongan' => $data['nominal_potongan'],
             'keterangan' => $data['keterangan'] ?? null,
             'is_aktif' => $request->is_aktif,
@@ -68,6 +77,11 @@ class PromoController extends Controller
 
     public function destroy(Promo $promo)
     {
+        // Cek apakah promo sudah digunakan
+        if ($promo->pembayarans()->exists()) {
+            return redirect()->back()->with('error', 'Promo tidak dapat dihapus karena sudah digunakan dalam transaksi.');
+        }
+
         $promo->delete();
         return redirect()->route('admin.promo.index')->with('success', 'Promo berhasil dihapus');
     }

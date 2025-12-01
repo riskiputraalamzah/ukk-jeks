@@ -10,8 +10,8 @@ class CreatePromoTable extends Migration
     {
         Schema::create('promo', function (Blueprint $table) {
             $table->id();
-            $table->string('jenis_promo',100);
-            $table->decimal('nominal_potongan', 6, 2);
+            $table->string('kode_promo', 100);
+            $table->integer('nominal_potongan');
             $table->text('keterangan')->nullable();
             $table->boolean('is_aktif')->default(true);
             $table->timestamps();

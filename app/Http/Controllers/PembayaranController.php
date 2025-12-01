@@ -18,11 +18,11 @@ class PembayaranController extends Controller
         $this->middleware('auth');
 
         // Setup Midtrans
-        Config::$serverKey = config('midtrans.server_key');
-        Config::$clientKey = config('midtrans.client_key');
-        Config::$isProduction = config('midtrans.is_production');
-        Config::$isSanitized = config('midtrans.is_sanitized');
-        Config::$is3ds = config('midtrans.is_3ds');
+        Config::$serverKey = config('midtrans.server_key') ?? '';
+        Config::$clientKey = config('midtrans.client_key') ?? '';
+        Config::$isProduction = config('midtrans.is_production') ?? '';
+        Config::$isSanitized = config('midtrans.is_sanitized') ?? '';
+        Config::$is3ds = config('midtrans.is_3ds') ?? '';
     }
 
     public function index()
@@ -148,13 +148,24 @@ class PembayaranController extends Controller
 
         // Hitung jumlah pembayaran
         // mengamil data harga berdasarkan gelombang pendaftaran (mengacu pada kolom harga di tabel gelombang)
-        $amount = 250000; // Default amount, bisa disesuaikan
+        $amount = $formulir->gelombang->harga; // Ambil harga dari gelombang pendaftaran
+        $discount = 0;
+
+        // Cek promo
+        if ($request->promo_voucher_id) {
+            $promo = \App\Models\Promo::find($request->promo_voucher_id);
+            if ($promo && $promo->is_aktif) {
+                $discount = $promo->nominal_potongan;
+            }
+        }
+
+        $finalAmount = max(0, $amount - $discount);
 
         // Buat record pembayaran
         $pembayaran = Pembayaran::create([
             'formulir_id' => $formulir->id,
             'jumlah_awal' => $amount,
-            'jumlah_akhir' => $amount,
+            'jumlah_akhir' => $finalAmount,
             'promo_voucher_id' => $request->promo_voucher_id,
             'status' => 'Pending', // Langsung set ke Pending
             'kode_transaksi' => 'TRX-' . time() . '-' . rand(1000, 9999),
@@ -164,7 +175,7 @@ class PembayaranController extends Controller
         try {
             $transactionDetails = [
                 'order_id' => $pembayaran->kode_transaksi,
-                'gross_amount' => $amount,
+                'gross_amount' => $finalAmount,
             ];
 
             $customerDetails = [
@@ -190,7 +201,6 @@ class PembayaranController extends Controller
             ]);
 
             return view('pembayaran.payment', compact('snapToken', 'pembayaran'));
-
         } catch (\Exception $e) {
             $pembayaran->delete(); // Hapus record jika gagal
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -247,7 +257,6 @@ class PembayaranController extends Controller
             }
 
             return view('pembayaran.payment', compact('snapToken', 'pembayaran'));
-
         } catch (\Exception $e) {
             return redirect()->route('pembayaran.show', $pembayaran)
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -297,6 +306,9 @@ class PembayaranController extends Controller
                 'metode_bayar' => $metodeBayar ?: $pembayaran->metode_bayar, // Gunakan mapping jika ada
                 'midtrans_payment_type' => $paymentType ?: $pembayaran->midtrans_payment_type,
             ]);
+
+            // Assign kelas
+            $this->assignKelas($pembayaran->formulir);
 
             // Kirim data ke view dengan status sukses
             return view('pembayaran.status', [
@@ -415,6 +427,7 @@ class PembayaranController extends Controller
                     'tanggal_bayar' => now(),
                     'metode_bayar' => $metodeBayar ?: $paymentType // Gunakan mapping
                 ]);
+                $this->assignKelas($pembayaran->formulir);
             }
         } else if ($transactionStatus == 'settlement') {
             $pembayaran->update([
@@ -425,6 +438,7 @@ class PembayaranController extends Controller
                 'tanggal_bayar' => now(),
                 'metode_bayar' => $metodeBayar ?: $paymentType // Gunakan mapping
             ]);
+            $this->assignKelas($pembayaran->formulir);
         } else if ($transactionStatus == 'pending') {
             $pembayaran->update([
                 'status' => 'Pending',
@@ -463,6 +477,34 @@ class PembayaranController extends Controller
         ]);
     }
 
+    /**
+     * Check promo code validity
+     */
+    public function checkPromo(Request $request)
+    {
+        $request->validate([
+            'kode_promo' => 'required|string',
+        ]);
+
+        $promo = \App\Models\Promo::where('kode_promo', $request->kode_promo)
+            ->where('is_aktif', true)
+            ->first();
+
+        if ($promo) {
+            return response()->json([
+                'valid' => true,
+                'message' => 'Kode promo valid! Potongan Rp ' . number_format($promo->nominal_potongan, 0, ',', '.'),
+                'data' => $promo
+            ]);
+        }
+
+        return response()->json([
+            'valid' => false,
+            'message' => 'Kode promo tidak ditemukan atau tidak aktif.',
+            'data' => null
+        ]);
+    }
+
     public function verify(Request $request, Pembayaran $pembayaran)
     {
         if (!Auth::user()->hasRole('admin'))
@@ -480,6 +522,56 @@ class PembayaranController extends Controller
             'catatan' => $data['catatan'] ?? null
         ]);
 
+        // Jika status Lunas, assign kelas
+        if ($data['status'] === 'Lunas') {
+            $this->assignKelas($pembayaran->formulir);
+        }
+
         return redirect()->route('pembayaran.show', $pembayaran)->with('success', 'Status pembayaran diperbarui.');
+    }
+
+    /**
+     * Assign siswa ke kelas berdasarkan jurusan dan kapasitas
+     */
+    private function assignKelas(FormulirPendaftaran $formulir)
+    {
+        // Cek jika sudah punya kelas
+        if ($formulir->kelas_id) {
+            return;
+        }
+
+        // Cari kelas yang sesuai jurusan dan masih ada slot
+        // Urutkan berdasarkan nama kelas (asumsi X RPL 1, X RPL 2, dst)
+        $kelas = \App\Models\Kelas::where('jurusan_id', $formulir->jurusan_id)
+            ->where('kapasitas', '>', 0)
+            ->orderBy('nama_kelas', 'asc')
+            ->first();
+
+        if ($kelas) { // Jika ada kelas yang tersedia
+            // Assign kelas ke formulir
+            $formulir->update(['kelas_id' => $kelas->id]);
+
+            // Kurangi kapasitas kelas
+            $kelas->decrement('kapasitas');
+        } else {
+            // Jika semua kelas penuh, buat kelas baru
+            $jurusan = $formulir->jurusan;
+
+            // Hitung jumlah kelas yang sudah ada untuk jurusan ini
+            $countKelas = \App\Models\Kelas::where('jurusan_id', $formulir->jurusan_id)->count();
+            $nextNumber = $countKelas + 1;
+
+            // Buat kelas baru
+            $newKelas = \App\Models\Kelas::create([
+                'jurusan_id' => $formulir->jurusan_id,
+                'nama_kelas' => 'X ' . $jurusan->kode_jurusan . ' ' . $nextNumber, // Format: X RPL 4
+                'tipe_kelas' => 'Reguler', // Default
+                'kapasitas' => 19, // 20 - 1 (siswa ini)
+                'tahun_ajaran' => date('Y'),
+            ]);
+
+            // Assign siswa ke kelas baru
+            $formulir->update(['kelas_id' => $newKelas->id]);
+        }
     }
 }

@@ -63,7 +63,11 @@
                         </tr>
                         <tr>
                             <th>Jurusan</th>
-                            <td>{{ $calonSiswa->jurusan->nama_jurusan ?? '-' }}</td>
+                            <td>{{ $calonSiswa->jurusan->nama ?? '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Kelas</th>
+                            <td>{{ $calonSiswa->kelas->nama_kelas ?? '-' }}</td>
                         </tr>
                         <tr>
                             <th>Gelombang</th>
@@ -94,22 +98,22 @@
         </div>
         <div class="card-body">
             @if($calonSiswa->dokumen->count() > 0)
-                <div class="row">
-                    @foreach($calonSiswa->dokumen as $dokumen)
-                    <div class="col-md-4 mb-3">
-                        <div class="border rounded p-3">
-                            <h6 class="mb-2">{{ $dokumen->jenis_dokumen }}</h6>
-                            <a href="{{ Storage::url($dokumen->path_file) }}" 
-                               target="_blank" 
-                               class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-download me-1"></i>Download
-                            </a>
-                        </div>
+            <div class="row">
+                @foreach($calonSiswa->dokumen as $dokumen)
+                <div class="col-md-4 mb-3">
+                    <div class="border rounded p-3">
+                        <h6 class="mb-2">{{ $dokumen->jenis_dokumen }}</h6>
+                        <a href="{{ Storage::url($dokumen->path_file) }}"
+                            target="_blank"
+                            class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-download me-1"></i>Download
+                        </a>
                     </div>
-                    @endforeach
                 </div>
+                @endforeach
+            </div>
             @else
-                <p class="text-muted">Tidak ada dokumen yang diupload.</p>
+            <p class="text-muted">Tidak ada dokumen yang diupload.</p>
             @endif
         </div>
     </div>
@@ -121,33 +125,20 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-12">
                     <form action="{{ route('admin.verifikasi.approve', $calonSiswa->id) }}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <label for="catatan" class="form-label">Catatan Verifikasi (Opsional)</label>
-                            <textarea name="catatan" id="catatan" rows="3" class="form-control" 
-                                      placeholder="Berikan catatan jika diperlukan..."></textarea>
+                            <textarea name="catatan" id="catatan" rows="3" class="form-control"
+                                placeholder="Berikan catatan jika diperlukan..."></textarea>
                         </div>
                         <button type="submit" class="btn btn-success btn-lg w-100">
                             <i class="fas fa-check me-2"></i>Verifikasi & Terima
                         </button>
                     </form>
                 </div>
-                <div class="col-md-6">
-                    <form action="{{ route('admin.verifikasi.reject', $calonSiswa->id) }}" method="POST">
-                        @csrf
-                        <div class="mb-3">
-                            <label for="alasan_penolakan" class="form-label">Alasan Penolakan *</label>
-                            <textarea name="alasan_penolakan" id="alasan_penolakan" rows="3" class="form-control" 
-                                      placeholder="Wajib memberikan alasan penolakan..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-danger btn-lg w-100" 
-                                onclick="return confirm('Yakin ingin menolak calon siswa ini?')">
-                            <i class="fas fa-times me-2"></i>Tolak Pendaftaran
-                        </button>
-                    </form>
-                </div>
+
             </div>
         </div>
     </div>

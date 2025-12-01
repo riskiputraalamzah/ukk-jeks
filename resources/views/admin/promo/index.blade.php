@@ -17,9 +17,9 @@
             <thead class="table-primary">
                 <tr class="text-center">
                     <th>#</th>
-                    <th>Keterangan</th>
+                    <th>Kode Promo</th>
                     <th>Nominal Potongan</th>
-                    <th>kode promo</th>
+                    <th>Keterangan</th>
                     <th>Status</th>
                     <th width="20%">Aksi</th>
                 </tr>
@@ -27,43 +27,43 @@
 
             <tbody>
                 @forelse ($promos as $promo)
-                    <tr class="text-center">
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $promo->jenis_promo }}</td>
-                        <td>{{ number_format($promo->nominal_potongan) }}</td>
-                        <td>{{ $promo->keterangan ?? '-' }}</td>
-                        <td>
-                            @if ($promo->is_aktif)
-                                <span class="badge bg-success">Aktif</span>
-                            @else
-                                <span class="badge bg-secondary">Nonaktif</span>
-                            @endif
-                        </td>
+                <tr class="text-center">
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $promo->kode_promo }}</td>
+                    <td>{{ number_format($promo->nominal_potongan) }}</td>
+                    <td>{{ $promo->keterangan ?? '-' }}</td>
+                    <td>
+                        @if ($promo->is_aktif)
+                        <span class="badge bg-success">Aktif</span>
+                        @else
+                        <span class="badge bg-secondary">Nonaktif</span>
+                        @endif
+                    </td>
 
-                        <td>
-                            <a href="{{ route('admin.promo.edit', $promo->id) }}" 
-                               class="btn btn-warning btn-sm">
-                                <i class="bi bi-pencil-square"></i> Edit
-                            </a>
+                    <td>
+                        <a href="{{ route('admin.promo.edit', $promo->id) }}"
+                            class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
 
-                            <form action="{{ route('admin.promo.destroy', $promo->id) }}" 
-                                  method="POST" class="d-inline"
-                                  onsubmit="return confirm('Yakin ingin menghapus promo ini?')">
-                                @csrf
-                                @method('DELETE')
+                        <form action="{{ route('admin.promo.destroy', $promo->id) }}"
+                            method="POST" class="d-inline"
+                            onsubmit="return confirm('Yakin ingin menghapus promo ini?')">
+                            @csrf
+                            @method('DELETE')
 
-                                <button class="btn btn-danger btn-sm">
-                                    <i class="bi bi-trash"></i> Hapus
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
+                            <button class="btn btn-danger btn-sm">
+                                <i class="bi bi-trash"></i> Hapus
+                            </button>
+                        </form>
+                    </td>
+                </tr>
                 @empty
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">
-                            Belum ada data promo.
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="6" class="text-center text-muted">
+                        Belum ada data promo.
+                    </td>
+                </tr>
                 @endforelse
             </tbody>
         </table>

@@ -26,6 +26,7 @@ class VerifikasiController extends Controller
 
     public function show($id)
     {
+
         $calonSiswa = FormulirPendaftaran::with([
             'user',
             'jurusan',

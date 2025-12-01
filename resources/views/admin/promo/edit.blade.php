@@ -9,25 +9,42 @@
     </div>
 
     <div class="card-body">
+
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+        @endif
+
         <form action="{{ route('admin.promo.update', $promo->id) }}" method="POST">
             @csrf
             @method('PUT')
 
             <div class="mb-3">
                 <label class="form-label">Keterangan</label>
-                <input type="text" name="Keterangan" class="form-control" 
-                       value="{{ $promo->Keterangan }}" required>
+                <input type="text" name="keterangan" class="form-control"
+                    value="{{ $promo->keterangan }}">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Nominal Potongan</label>
                 <input type="number" name="nominal_potongan" class="form-control"
-                       value="{{ $promo->nominal_potongan }}" required>
+                    value="{{ $promo->nominal_potongan }}" required>
             </div>
 
             <div class="mb-3">
-                <label class="form-label">kode promo</label>
-                <textarea name="kode_promo" class="form-control">{{ $promo->kode_promo }}</textarea>
+                <label class="form-label">Kode Promo</label>
+                <input type="text" name="kode_promo" class="form-control" value="{{ $promo->kode_promo }}" required>
             </div>
 
             <div class="mb-3">

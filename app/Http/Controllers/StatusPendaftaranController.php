@@ -81,12 +81,12 @@ class StatusPendaftaranController extends Controller
             ->firstOrFail();
 
         // Cek apakah sudah terverifikasi
-        if ($formulir->status !== 'terverifikasi') {
+        if ($formulir->status_verifikasi !== 'diverifikasi') {
             return redirect()->route('status-pendaftaran.index')
                 ->with('error', 'Anda belum dapat mencetak PDF. Tunggu verifikasi admin.');
         }
 
-        // Logic generate PDF (sementara redirect ke view dulu)
-        return view('pdf.bukti-pendaftaran', compact('formulir'));
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.bukti-pendaftaran', compact('formulir'));
+        return $pdf->download('bukti-pendaftaran-' . $formulir->nomor_pendaftaran . '.pdf');
     }
 }

@@ -242,12 +242,12 @@
         </button>
 
         @php
-            $user = auth()->user();
-            $formulir = $user->formulir;
-            $dokumenCount = $formulir ? \App\Models\DokumenPendaftaran::where('formulir_id', $formulir->id)->count() : 0;
-            $hasOrangTua = $formulir && $formulir->orangTua;
-            $hasWali = $formulir && $formulir->wali;
-            $hasPembayaran = $formulir && $formulir->pembayaran;
+        $user = auth()->user();
+        $formulir = $user->formulir;
+        $dokumenCount = $formulir ? \App\Models\DokumenPendaftaran::where('formulir_id', $formulir->id)->count() : 0;
+        $hasOrangTua = $formulir && $formulir->orangTua;
+        $hasWali = $formulir && $formulir->wali;
+        $hasPembayaran = $formulir && $formulir->pembayaran;
         @endphp
 
         <!-- Sidebar Navigation -->
@@ -290,10 +290,7 @@
                     </span>
                 </a>
 
-                <a href="{{ route('status') }}" class="nav-item {{ request()->routeIs('status') ? 'active' : '' }}">
-                    <i class="fas fa-history nav-icon"></i>
-                    <span class="nav-text">Status Pendaftaran</span>
-                </a>
+
 
                 <a href="{{ route('data-siswa.index') }}"
                     class="nav-item {{ request()->routeIs('data-siswa.*') ? 'active' : '' }}">
@@ -304,6 +301,10 @@
                         <i
                             class="fas {{ $formulir && ($hasOrangTua || $hasWali) && $dokumenCount > 0 ? 'fa-check-circle' : '' }}"></i>
                     </span>
+                </a>
+                <a href="{{ route('status') }}" class="nav-item {{ request()->routeIs('status') ? 'active' : '' }}">
+                    <i class="fas fa-history nav-icon"></i>
+                    <span class="nav-text">Status Pendaftaran</span>
                 </a>
 
                 <a href="{{ route('pembayaran.index') }}"
@@ -342,11 +343,11 @@
         <div class="main-with-sidebar" id="mainContent">
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
+            <header class="bg-white shadow">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    {{ $header }}
+                </div>
+            </header>
             @endisset
 
             <!-- Page Content -->
@@ -358,18 +359,18 @@
 
     <script>
         // Mobile sidebar toggle
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.querySelector('.custom-sidebar');
             const mobileToggle = document.querySelector('.mobile-toggle');
 
             if (mobileToggle) {
-                mobileToggle.addEventListener('click', function () {
+                mobileToggle.addEventListener('click', function() {
                     sidebar.classList.toggle('active');
                 });
             }
 
             // Close sidebar when clicking outside on mobile
-            document.addEventListener('click', function (event) {
+            document.addEventListener('click', function(event) {
                 if (window.innerWidth <= 768) {
                     if (!sidebar.contains(event.target) && !event.target.closest('.mobile-toggle')) {
                         sidebar.classList.remove('active');

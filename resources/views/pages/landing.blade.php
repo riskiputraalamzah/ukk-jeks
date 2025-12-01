@@ -48,7 +48,7 @@
             background-image: url('/images/sekolah.jpg');
             background-size: cover;
             background-position: center;
-            min-height: 380px;
+            min-height: 100dvh;
             display: flex;
             align-items: center;
         }
@@ -81,6 +81,10 @@
             color: #0d6efd;
             margin-bottom: 40px;
         }
+
+        section {
+            scroll-margin-top: 50px;
+        }
     </style>
 </head>
 
@@ -111,11 +115,23 @@
                         </ul>
                     </li>
 
+
+                    @if(auth()->check())
+
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-login" href="{{ auth()->user()->role == 'admin' ? route('admin.dashboard') : route('dashboard') }}">
+                            <i class="bi bi-box-arrow-in-right"></i> {{ auth()->user()->username }}
+                        </a>
+                    </li>
+
+                    @else
+
                     <li class="nav-item ms-lg-3">
                         <a class="btn btn-login" href="{{ route('login') }}">
                             <i class="bi bi-box-arrow-in-right"></i> Login
                         </a>
                     </li>
+                    @endif
                 </ul>
             </div>
         </div>
@@ -146,17 +162,17 @@
                         <h4 class="fw-bold text-primary text-center">Gelombang Aktif</h4>
 
                         @if($gelombang)
-                            @foreach ($gelombang as $g)
-                                <h5 class="mt-3">{{ $g->nama_gelombang }}</h5>
-                                <p class="mb-1">
-                                    <i class="bi bi-calendar-check"></i>
-                                    {{ $g->tanggal_mulai }} s/d {{ $g->tanggal_selesai }}
-                                </p>
-                                <p class="text-muted">{{ $g->catatan }}</p>
-                            @endforeach
+                        @foreach ($gelombang as $g)
+                        <h5 class="mt-3">{{ $g->nama_gelombang }}</h5>
+                        <p class="mb-1">
+                            <i class="bi bi-calendar-check"></i>
+                            {{ $g->tanggal_mulai }} s/d {{ $g->tanggal_selesai }}
+                        </p>
+                        <p class="text-muted">{{ $g->catatan }}</p>
+                        @endforeach
 
                         @else
-                            <p class="text-muted mt-3">Belum ada gelombang aktif.</p>
+                        <p class="text-muted mt-3">Belum ada gelombang aktif.</p>
                         @endif
                     </div>
                 </div>
@@ -167,15 +183,15 @@
                         <h4 class="fw-bold text-success text-center">Promo Pendaftaran</h4>
 
                         @forelse($promos as $p)
-                            <hr>
-                            <h5 class="mt-3 text-capitalize">{{ $p->jenis_promo }}</h5>
-                            <p class="mb-1">
-                                <i class="bi bi-tag"></i>
-                                Diskon: <strong>{{ number_format($p->nominal_potongan) }}</strong>
-                            </p>
-                            <p class="text-muted">{{ $p->keterangan }}</p>
+                        <hr>
+                        <h5 class="mt-3 text-capitalize">{{ $p->jenis_promo }}</h5>
+                        <p class="mb-1">
+                            <i class="bi bi-tag"></i>
+                            Diskon: <strong>{{ number_format($p->nominal_potongan) }}</strong>
+                        </p>
+                        <p class="text-muted">{{ $p->keterangan }}</p>
                         @empty
-                            <p class="text-muted mt-3">Belum ada promo aktif.</p>
+                        <p class="text-muted mt-3">Belum ada promo aktif.</p>
                         @endforelse
                     </div>
                 </div>
@@ -192,26 +208,26 @@
             <div class="row g-4">
 
                 @php
-                    $jurusan = [
-                        ['RPL', 'Rekayasa Perangkat Lunak', 'bi bi-laptop'],
-                        ['TKR', 'Teknik Kendaraan Ringan', 'bi bi-truck'],
-                        ['TPM', 'Teknik Pemesinan', 'bi bi-gear'],
-                        ['TITL', 'Teknik Instalasi Tenaga Listrik', 'bi bi-lightning-charge'],
-                        ['TEI', 'Teknik Elektronika Industri', 'bi bi-cpu'],
-                    ];
+                $jurusan = [
+                ['RPL', 'Rekayasa Perangkat Lunak', 'bi bi-laptop'],
+                ['TKR', 'Teknik Kendaraan Ringan', 'bi bi-truck'],
+                ['TPM', 'Teknik Pemesinan', 'bi bi-gear'],
+                ['TITL', 'Teknik Instalasi Tenaga Listrik', 'bi bi-lightning-charge'],
+                ['TEI', 'Teknik Elektronika Industri', 'bi bi-cpu'],
+                ];
                 @endphp
 
                 @foreach($jurusan as $j)
-                    <div class="col-md-4">
-                        <div class="card shadow-sm border-0 h-100">
-                            <div class="card-body text-center">
-                                <i class="{{ $j[2] }} display-4 text-primary mb-3"></i>
-                                <h5 class="fw-bold">{{ $j[1] }}</h5>
-                                <p class="text-muted">Jurusan {{ $j[0] }} membekali siswa dengan kemampuan unggul di
-                                    bidangnya.</p>
-                            </div>
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body text-center">
+                            <i class="{{ $j[2] }} display-4 text-primary mb-3"></i>
+                            <h5 class="fw-bold">{{ $j[1] }}</h5>
+                            <p class="text-muted">Jurusan {{ $j[0] }} membekali siswa dengan kemampuan unggul di
+                                bidangnya.</p>
                         </div>
                     </div>
+                </div>
                 @endforeach
 
                 <!-- TATA CARA PENDAFTARAN -->
@@ -341,9 +357,7 @@
                     </div>
                 </section>
 
-                <footer class="text-center p-3 bg-primary text-white">
-                    © {{ date('Y') }} SMK Antartika | PPDB Online
-                </footer>
+
 
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
@@ -354,3 +368,6 @@
 </div>
 </div>
 </section>
+<footer class="text-center p-3 bg-primary text-white">
+    © {{ date('Y') }} SMK Antartika | PPDB Online
+</footer>

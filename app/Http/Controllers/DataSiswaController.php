@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FormulirPendaftaran;
 use App\Models\DokumenPendaftaran;
-use App\Models\OrangTua;
+use App\Models\{OrangTua, Wali};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,7 +14,7 @@ class DataSiswaController extends Controller
     {
         // Ambil user yang login
         $user = Auth::user();
-        
+
         // Cek apakah sudah mengisi formulir
         $formulir = FormulirPendaftaran::where('user_id', $user->id)->first();
 
@@ -38,7 +38,11 @@ class DataSiswaController extends Controller
 
         // Cek apakah sudah mengisi data keluarga
         $orangTua = OrangTua::where('formulir_id', $formulir->id)->first();
-        if (!$orangTua) {
+        $wali = Wali::where('formulir_id', $formulir->id)->first();
+
+        $dataOrangTuaOrWali = $orangTua || $wali;
+
+        if (!$dataOrangTuaOrWali) {
             return view('data-siswa.blocked', [
                 'message' => 'Anda harus mengisi data orang tua terlebih dahulu sebelum melihat data siswa.',
                 'route' => route('data-keluarga.index'),
@@ -48,18 +52,18 @@ class DataSiswaController extends Controller
 
         // Ambil formulir pendaftaran terbaru user ini
         $formulir = FormulirPendaftaran::where('user_id', $user->id)
-                    ->with(['jurusan', 'gelombang', 'dokumen'])
-                    ->latest()
-                    ->first();
-        
+            ->with(['jurusan', 'gelombang', 'dokumen'])
+            ->latest()
+            ->first();
+
         // Cari foto 3x4
         $fotoSiswa = null;
         if ($formulir) {
             $fotoSiswa = DokumenPendaftaran::where('formulir_id', $formulir->id)
-                          ->where('jenis_dokumen', 'foto_3x4')
-                          ->first();
+                ->where('jenis_dokumen', 'foto_3x4')
+                ->first();
         }
-        
+
         return view('data-siswa.index', compact('formulir', 'fotoSiswa'));
     }
 }

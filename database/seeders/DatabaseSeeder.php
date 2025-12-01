@@ -67,6 +67,7 @@ class DatabaseSeeder extends Seeder
                 'nama_gelombang' => 'Gelombang 1',
                 'tanggal_mulai' => '2024-07-01',
                 'tanggal_selesai' => '2024-08-31',
+                'harga' => 1000000,
                 'limit_siswa' => 100,
             ]
         );
@@ -75,6 +76,7 @@ class DatabaseSeeder extends Seeder
                 'nama_gelombang' => 'Gelombang 2',
                 'tanggal_mulai' => '2024-09-01',
                 'tanggal_selesai' => '2024-10-31',
+                'harga' => 2000000,
                 'limit_siswa' => 100,
             ]
         );
@@ -100,15 +102,15 @@ class DatabaseSeeder extends Seeder
             'kode_jurusan' => 'TITL',
             'nama' => 'Teknik Instalasi Tenaga Listrik',
         ]);
-        Jurusan::create([            
+        Jurusan::create([
             'id' => 5,
             'kode_jurusan' => 'TEI',
             'nama' => 'Teknik Elektronika Industri',
-        ]); 
+        ]);
 
         //kelas
 
-Kelas::create([
+        Kelas::create([
             'nama_kelas' => 'X RPL 1',
             'jurusan_id' => 1,
             'tipe_kelas' => 'Unggulan',
@@ -142,6 +144,6 @@ Kelas::create([
             'tipe_kelas' => 'Reguler',
             'kapasitas' => 32,
             'tahun_ajaran' => '2025',
-        ]);     
+        ]);
     }
 }
