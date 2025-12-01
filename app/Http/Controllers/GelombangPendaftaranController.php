@@ -32,6 +32,7 @@ class GelombangPendaftaranController extends Controller
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'limit_siswa' => 'required|integer|min:0',
+            'harga' => 'required|integer',
             'catatan' => 'nullable|string',
         ]);
 
@@ -57,6 +58,7 @@ class GelombangPendaftaranController extends Controller
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
             'limit_siswa' => 'required|integer|min:0',
+             'harga' => 'required|integer',
             'catatan' => 'nullable|string',
         ]);
 

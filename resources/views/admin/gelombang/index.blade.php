@@ -22,6 +22,7 @@
                     <th>Mulai</th>
                     <th>Selesai</th>
                     <th>Limit</th>
+                     <th>Harga</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -34,6 +35,8 @@
                     <td>{{ $g->tanggal_mulai }}</td>
                     <td>{{ $g->tanggal_selesai }}</td>
                     <td>{{ $g->limit_siswa }}</td>
+                    <td>{{ $g->harga}}</td>
+                 
                     <td>
                         <a href="{{ route('admin.gelombang.edit',$g) }}" class="btn btn-warning btn-sm">Edit</a>
 

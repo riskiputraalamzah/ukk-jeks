@@ -14,9 +14,9 @@
             @method('PUT')
 
             <div class="mb-3">
-                <label class="form-label">Jenis Promo</label>
-                <input type="text" name="jenis_promo" class="form-control" 
-                       value="{{ $promo->jenis_promo }}" required>
+                <label class="form-label">Keterangan</label>
+                <input type="text" name="Keterangan" class="form-control" 
+                       value="{{ $promo->Keterangan }}" required>
             </div>
 
             <div class="mb-3">
@@ -26,8 +26,8 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Keterangan</label>
-                <textarea name="keterangan" class="form-control">{{ $promo->keterangan }}</textarea>
+                <label class="form-label">kode promo</label>
+                <textarea name="kode_promo" class="form-control">{{ $promo->kode_promo }}</textarea>
             </div>
 
             <div class="mb-3">

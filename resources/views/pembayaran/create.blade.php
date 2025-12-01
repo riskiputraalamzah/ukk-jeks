@@ -7,6 +7,12 @@
             <div class="text-center mb-6">
                 <h1 class="text-2xl font-bold text-gray-800">Pembayaran Pendaftaran</h1>
                 <p class="text-gray-600">Lakukan pembayaran untuk menyelesaikan pendaftaran</p>
+
+                @if (session('error'))
+                    <div class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                        {{ session('error') }}
+                    </div>
+                @endif
             </div>
 
             <!-- Informasi Biaya -->

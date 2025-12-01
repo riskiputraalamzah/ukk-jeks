@@ -10,6 +10,7 @@ class LandingPageController extends Controller
     public function index()
     {
         // Ambil gelombang aktif
+        // tampilkan gelombang dalam rentang tanggal sekarang dan slot yang masih tersedia
         $gelombang = GelombangPendaftaran::all();
 
         // Ambil promo aktif

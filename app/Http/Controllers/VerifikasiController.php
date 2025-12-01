@@ -10,24 +10,25 @@ class VerifikasiController extends Controller
 {
     public function index()
     {
+        // dd('test');
         // Ambil calon siswa yang sudah bayar tapi belum diverifikasi
         $calonSiswa = FormulirPendaftaran::with(['user', 'jurusan', 'pembayaran'])
-            ->whereHas('pembayaran', function($query) {
-                $query->where('status', 'Lunas')
-                      ->orWhere('midtrans_status', 'settlement');
+            ->whereHas('pembayaran', function ($query) {
+                $query->where('status', 'Lunas');
             })
             ->where('status_verifikasi', 'menunggu')
             ->latest()
             ->get();
 
+        // dd($calonSiswa);
         return view('admin.verifikasi.index', compact('calonSiswa'));
     }
 
     public function show($id)
     {
         $calonSiswa = FormulirPendaftaran::with([
-            'user', 
-            'jurusan', 
+            'user',
+            'jurusan',
             'gelombang',
             'pembayaran',
             'dokumen',
@@ -52,7 +53,7 @@ class VerifikasiController extends Controller
 
         DB::transaction(function () use ($request, $id) {
             $calonSiswa = FormulirPendaftaran::findOrFail($id);
-            
+
             if (!$calonSiswa->isSiapDiverifikasi()) {
                 throw new \Exception('Calon siswa belum siap untuk diverifikasi.');
             }
@@ -77,7 +78,7 @@ class VerifikasiController extends Controller
 
         DB::transaction(function () use ($request, $id) {
             $calonSiswa = FormulirPendaftaran::findOrFail($id);
-            
+
             if (!$calonSiswa->isMenungguVerifikasi()) {
                 throw new \Exception('Calon siswa tidak dalam status menunggu verifikasi.');
             }
@@ -100,6 +101,8 @@ class VerifikasiController extends Controller
             ->whereIn('status_verifikasi', ['diverifikasi', 'ditolak'])
             ->latest('verified_at')
             ->get();
+
+        // dd($calonSiswa);
 
         return view('admin.verifikasi.riwayat', compact('calonSiswa'));
     }

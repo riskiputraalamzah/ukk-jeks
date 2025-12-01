@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 class GelombangPendaftaran extends Model
 {
     protected $table = 'gelombang_pendaftaran';
-    protected $fillable = ['nama_gelombang','tanggal_mulai','tanggal_selesai','limit_siswa','catatan'];
+    protected $fillable = ['nama_gelombang','tanggal_mulai','tanggal_selesai','limit_siswa','harga','catatan'];
 
     public function promos()
     {

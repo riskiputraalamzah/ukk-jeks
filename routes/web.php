@@ -62,6 +62,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('wali', WaliController::class);
 
     // Pembayaran (kecuali edit dan update)
+    // pembayaran midtrans routes
+    Route::get('/pembayaran/status', [PembayaranController::class, 'status'])->name('pembayaran.status');
+    Route::post('/pembayaran/notification', [PembayaranController::class, 'notification'])->name('pembayaran.notification');
+
+
+    // Route untuk continue payment
+    Route::get('/pembayaran/{pembayaran}/continue', [PembayaranController::class, 'continue'])->name('pembayaran.continue');
+    Route::get('/pembayaran/callback', [PembayaranController::class, 'callback'])->name('pembayaran.callback');
+    Route::get('/pembayaran/{pembayaran}/check-status', [PembayaranController::class, 'checkStatus'])->name('pembayaran.check-status');
+    Route::post('/pembayaran/notification', [PembayaranController::class, 'notification'])->name('pembayaran.notification');
     Route::resource('pembayaran', PembayaranController::class)->except(['edit', 'update']);
 
     // Data Keluarga Routes (FORM COMBINED BARU) - YANG DIPERBAIKI
@@ -95,9 +105,7 @@ Route::get('/status/cetak-pdf/{id}', [StatusPendaftaranController::class, 'cetak
 // Pengaturan
 Route::get('/pengaturan', [ProfileController::class, 'pengaturan'])->name('pengaturan');
 
-// pembayaran midtrans routes
-Route::get('/pembayaran/status', [PembayaranController::class, 'status'])->name('pembayaran.status');
-Route::post('/pembayaran/notification', [PembayaranController::class, 'notification'])->name('pembayaran.notification');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -110,7 +118,7 @@ Route::middleware(['auth', 'can:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        
+
         // Dashboard admin
         Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 

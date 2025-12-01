@@ -12,19 +12,20 @@ class CreatePembayaranTable extends Migration
             $table->id();
             $table->foreignId('formulir_id')->constrained('formulir_pendaftaran')->onDelete('cascade');
             $table->dateTime('tanggal_bayar')->nullable();
-            $table->enum('metode_bayar',['VA','E-Wallet','Transfer Bank'])->nullable();
-            $table->decimal('jumlah_awal',12,2)->nullable();
+            $table->string('metode_bayar')->nullable();
+            $table->decimal('jumlah_awal', 12, 2)->nullable();
             $table->foreignId('promo_voucher_id')->nullable()->constrained('promo')->onDelete('set null');
-            $table->decimal('jumlah_akhir',12,2)->nullable();
-            $table->enum('status',['Menunggu','Lunas'])->default('Menunggu');
-            $table->string('kode_transaksi',50)->unique()->nullable();
-            $table->string('no_kuitansi',50)->unique()->nullable();
-            $table->string('bukti_bayar',255)->nullable();
+            $table->decimal('jumlah_akhir', 12, 2)->nullable();
+            $table->enum('status', ['Menunggu', 'Lunas'])->default('Menunggu');
+            $table->string('kode_transaksi', 50)->unique()->nullable();
+            $table->string('no_kuitansi', 50)->unique()->nullable();
+            $table->string('bukti_bayar', 255)->nullable();
             $table->foreignId('admin_verifikasi_id')->nullable()->constrained('users')->onDelete('set null');
             $table->dateTime('verified_at')->nullable();
             $table->text('catatan')->nullable();
-            $table->string('path_nota_pdf',255)->nullable();
+            $table->string('path_nota_pdf', 255)->nullable();
             $table->timestamp('created_at')->nullable();
+            $table->timestamp('updated_at')->nullable();
         });
     }
 

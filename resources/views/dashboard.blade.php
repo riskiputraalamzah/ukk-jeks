@@ -63,11 +63,32 @@
                         <i class="fas fa-check-circle mr-2"></i>
                         Sudah Mengisi Formulir
                     </div>
+
+                    <div class="inline-flex items-center px-4 py-3 bg-green-100 border border-green-200 text-green-700 rounded-xl font-semibold">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Sudah Mengisi Upload Dokumen ({{ $dokumenCount }} berkas)
+                    </div>
+
+                    <div class="inline-flex items-center px-4 py-3 bg-green-100 border border-green-200 text-green-700 rounded-xl font-semibold">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Sudah Mengisi Data Orang Tua & Wali
+                    </div>
+
                     <div class="mt-4 space-y-4">
                         <div>
                             <a href="{{ route('formulir.index') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 font-medium">
                                 <i class="fas fa-edit mr-2"></i>
                                 Edit Formulir Pendaftaran
+                            </a>
+
+                             <a href="{{ route('dokumen.index') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 font-medium">
+                                <i class="fas fa-edit mr-2"></i>
+                                Edit Upload Dokumen
+                            </a>
+
+                            <a href="{{ route('data-keluarga.index') }}" class="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 font-medium">
+                                <i class="fas fa-edit mr-2"></i>
+                                Edit Data Orang tua & Wali
                             </a>
                         </div>
                         
@@ -193,6 +214,14 @@
                     <p class="text-sm text-gray-600">Upload berkas</p>
                 </a>
 
+                 <a href="{{ route('data-keluarga.index') }}" class="p-4 border border-gray-200 rounded-lg hover:bg-green-50 hover:border-green-200 transition duration-200 text-center group">
+                    <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-green-600 transition duration-200">
+                        <i class="fas fa-upload text-white"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-800 mb-1 text-sm">Data Orang Tua & Wali</h3>
+                    <p class="text-sm text-gray-600">Upload berkas</p>
+                </a>
+
                 <a href="{{ route('pembayaran.create') }}" class="p-4 border border-gray-200 rounded-lg hover:bg-purple-50 hover:border-purple-200 transition duration-200 text-center group">
                     <div class="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-purple-600 transition duration-200">
                         <i class="fas fa-credit-card text-white"></i>
@@ -201,13 +230,13 @@
                     <p class="text-sm text-gray-600">Bayar sekarang</p>
                 </a>
 
-                <a href="#" class="p-4 border border-gray-200 rounded-lg hover:bg-orange-50 hover:border-orange-200 transition duration-200 text-center group">
+                <!-- <a href="#" class="p-4 border border-gray-200 rounded-lg hover:bg-orange-50 hover:border-orange-200 transition duration-200 text-center group">
                     <div class="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-orange-600 transition duration-200">
                         <i class="fas fa-question-circle text-white"></i>
                     </div>
                     <h3 class="font-semibold text-gray-800 mb-1 text-sm">Bantuan</h3>
                     <p class="text-sm text-gray-600">Hubungi admin</p>
-                </a>
+                </a> -->
             </div>
         </div>
 

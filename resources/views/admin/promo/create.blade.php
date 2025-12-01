@@ -13,8 +13,8 @@
             @csrf
 
             <div class="mb-3">
-                <label class="form-label">Jenis Promo</label>
-                <input type="text" name="jenis_promo" class="form-control" required>
+                <label class="form-label">Keterangan</label>
+                <input type="text" name="Keterangan" class="form-control" required>
             </div>
 
             <div class="mb-3">
@@ -23,8 +23,8 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Keterangan</label>
-                <textarea name="keterangan" class="form-control"></textarea>
+                <label class="form-label">kode promo</label>
+                <textarea name="kode_promo" class="form-control"></textarea>
             </div>
 
             <div class="mb-3">

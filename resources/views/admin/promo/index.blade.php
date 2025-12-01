@@ -17,9 +17,9 @@
             <thead class="table-primary">
                 <tr class="text-center">
                     <th>#</th>
-                    <th>Jenis Promo</th>
-                    <th>Nominal Potongan</th>
                     <th>Keterangan</th>
+                    <th>Nominal Potongan</th>
+                    <th>kode promo</th>
                     <th>Status</th>
                     <th width="20%">Aksi</th>
                 </tr>

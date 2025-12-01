@@ -14,6 +14,7 @@ class CreateGelombangPendaftaranTable extends Migration
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
             $table->integer('limit_siswa');
+            $table->integer('harga');
             $table->text('catatan')->nullable();
             $table->timestamps();
         });
